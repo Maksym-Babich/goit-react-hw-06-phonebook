@@ -1,18 +1,21 @@
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 import { SearchField } from 'components/Search/Search.styled';
+import { change } from 'redux/filterSlice';
 
-export function Search({ search, onSearchInput }) {
+export function Search() {
+  const filterValue = useSelector(state => state.filterValue);
+  const dispatch = useDispatch();
+
+  const onFielterChange = event => {
+    dispatch(change(event.currentTarget.value));
+  };
+
   return (
     <SearchField
       type="text"
       placeholder="Search"
-      value={search}
-      onChange={onSearchInput}
+      value={filterValue}
+      onChange={onFielterChange}
     />
   );
 }
-
-Search.propTypes = {
-  search: PropTypes.string.isRequired,
-  onSearchInput: PropTypes.func.isRequired,
-};

@@ -1,13 +1,43 @@
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
 import { HtmlForm, Label, Input, Button } from 'components/Form/Form.styled';
+import { add } from 'redux/contactsSlice';
 
-export function Form({ onAddContact }) {
+export function Form() {
   const nameId = nanoid();
   const phoneId = nanoid();
+  const contacts = useSelector(state => state.contacts.contacts);
+  const dispatch = useDispatch();
+
+  const addContact = event => {
+    event.preventDefault();
+    const contact = {
+      name: event.currentTarget.elements.name.value,
+      number: event.currentTarget.elements.number.value,
+      id: nanoid(),
+    };
+
+    const prevContacts = contacts.reduce((acc, contact) => {
+      acc.push(contact.name, contact.number);
+      return acc;
+    }, []);
+
+    if (prevContacts.includes(contact.name)) {
+      alert(`${contact.name} is already in contacts`);
+      return;
+    }
+
+    if (prevContacts.includes(contact.number)) {
+      alert(`Contact with number ${contact.number} already exists`);
+      return;
+    }
+
+    dispatch(add(contact));
+    event.currentTarget.reset();
+  };
 
   return (
-    <HtmlForm onSubmit={onAddContact}>
+    <HtmlForm onSubmit={addContact}>
       <Label htmlFor={nameId}>{'Name'}</Label>
       <Input
         type="text"
@@ -32,7 +62,3 @@ export function Form({ onAddContact }) {
     </HtmlForm>
   );
 }
-
-Form.propTypes = {
-  onAddContact: PropTypes.func.isRequired,
-};
